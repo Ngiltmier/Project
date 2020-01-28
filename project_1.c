@@ -22,7 +22,7 @@ int main(int argc, char ** argv) {
 
 	while ((de = readdir(dr)) != NULL) {
 		if (atoi(de->d_name) != 0) {		
-			//printf("%s\n", de->d_name);
+			printf("%s\n", de->d_name);
 		}
 	}
 
