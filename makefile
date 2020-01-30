@@ -2,4 +2,4 @@
 CC=gcc
 
 proyecto: project_1.c
-	$(CC) -Wall -o project_1.c
+	$(CC) -Wall -o proyecto project_1.c
