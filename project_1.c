@@ -42,42 +42,20 @@ int main(int argc, char ** argv) {
 			if (fp == NULL) {
 				printf("\tThis file is NULL\n");
 			} else {
-				//scan all the content of the file
-				//documentation can be found at: https://www.redhat.com/archives/axp-list/2001-January/msg00355.html
 
-				//CURRENT OBJECTIVE: FIND THE SIZE OF THE PROCESS IN KB
-
-				//ATTEMPT1:
-				/*
-				int pid,ppid,pgrp,session,tty_nr,tpgid;
-				unsigned int flags;
-				unsigned long minflt,cminflt,majflt,cmajflt;
-				char cm[255],stat;
-				if (fscanf(fp,"%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu",
-					&pid,cm,&stat,&ppid,&pgrp,&session,&tty_nr,&tpgid,&flags,
-					&minflt,&cminflt,&majflt,&cmajflt) == EOF) {
-					perror("fscanf");}
-					//,&(st->utime),&(st->stime)
-				else {
-					printf("pid: %d | command name: %s | ppid: %d | size: \n", pid,cm,ppid);			
-				}
-				*/
-
-				//ATTEMPT2:
-				int pid,ppid;
+				//declare variables to store the information we want from the proc/PID/stat file
+				int pid;
+				int ppid;
 				char exName[255];
-				unsigned int vsize;
+				unsigned long vsize;
 
-				if (fscanf(fp, "%d %s %d %*lu %*d %*lu %*d %u",
-						&pid, exName, &ppid, &vsize) == EOF) {
+				//scan the proc/PID/stat file ignoring data we don't want
+				if (fscanf(fp, "%d %s %*s %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %lu", &pid, exName, &ppid, &vsize) == EOF) {
 					perror("sscanf");
 				} else {
-					printf("pid: %d | command name: %s | ppid: %d | size: %u\n", pid, exName, ppid, vsize);
-				}
-
-				
+					printf("pid: %d | exName: %s | ppid: %d | vsize: %lu\n", pid, exName, ppid, vsize);
+				} 	
 			}
-
 			fclose(fp);
 		}
 	}
