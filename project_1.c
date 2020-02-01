@@ -14,6 +14,23 @@ struct Process {
 	unsigned long vsize;
 };
 
+void printTabs(int level) {
+	for (int i = 0; i < level; i++) {
+		printf("\t");
+	}
+}
+
+void findNeighbors(struct Process* listOfProcesses[], struct Process* node) {
+
+}
+
+void printTree(int level, struct Process* node) {
+	//DFS
+	//"visit" node
+	printTabs(level);
+	printf("(%d) %s, %lu kb\n", node->pid, node->exName, node->vsize);
+}
+
 int main(int argc, char ** argv) {
 
 	struct dirent * de;	//Pointer for directory entry
@@ -55,6 +72,7 @@ int main(int argc, char ** argv) {
 	//create an array of Process structs
 	struct Process listOfProcesses[max];
 	
+	int i = 0;
 	while ((de = readdir(dr)) != NULL) {
 		//check to see if the current directory is an integer
 		//all processes are integers
@@ -91,17 +109,19 @@ int main(int argc, char ** argv) {
 				} else {
 					//printf("pid: %d | exName: %s | ppid: %d | vsize: %lu\n", pid, exName, ppid, vsize);
 					struct Process p = {.pid = pid, .exName = exName, .ppid = ppid, .vsize = vsize};
-					printf("Process Name: %s\n", p.exName);
+					listOfProcesses[i] = p;
+					i++;
 				} 	
 			}
 			
 			fclose(fp);
 		}
 	}
-
-	printf("\nMax PID: %d\n", max);
-
 	closedir(dr);
+	
+	//printf("list[0]: memoryLoc = %p , pid = %d", &listOfProcesses[0], listOfProcesses[0].pid);
+	printTree(0, &listOfProcesses[0]);
+
 	return 0;
 }
 
