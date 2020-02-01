@@ -7,6 +7,12 @@
 #include <string.h>
 #include <dirent.h>
 
+struct Process {
+	int pid;
+	int ppid;
+	char *exName;
+	unsigned long vsize;
+};
 
 int main(int argc, char ** argv) {
 
@@ -23,14 +29,14 @@ int main(int argc, char ** argv) {
 		return 0;
 	}
 
-	//keep track of the max PID to correctly size an array of Processes
+	//keep track of the number of process folders to correctly size an array of Processes
 	int max = 0;
 
 	while ((de = readdir(dr)) != NULL) {
 		//check to see if the current directory is an integer
 		//all processes are integers
 		if (atoi(de->d_name) != 0) {
-			max++;			
+			max++;
 		}
 	}
 
@@ -46,15 +52,15 @@ int main(int argc, char ** argv) {
 		return 0;
 	}
 
+	//create an array of Process structs
+	struct Process listOfProcesses[max];
 	
 	while ((de = readdir(dr)) != NULL) {
 		//check to see if the current directory is an integer
 		//all processes are integers
-		if (atoi(de->d_name) != 0) {
-			
-			max++;			
+		if (atoi(de->d_name) != 0) {		
 					
-			printf("Scanning <%s>...\n", de->d_name);
+			//printf("Scanning <%s>...\n", de->d_name);
 
 			//creates a string fileName = "/proc/currentProcID/stat"
 			char fileName[50];
@@ -83,8 +89,9 @@ int main(int argc, char ** argv) {
 				if (fscanf(fp, "%d %s %*s %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %lu", &pid, exName, &ppid, &vsize) == EOF) {
 					perror("sscanf");
 				} else {
-					if (pid > max) {max = pid;}
-					printf("pid: %d | exName: %s | ppid: %d | vsize: %lu\n", pid, exName, ppid, vsize);
+					//printf("pid: %d | exName: %s | ppid: %d | vsize: %lu\n", pid, exName, ppid, vsize);
+					struct Process p = {.pid = pid, .exName = exName, .ppid = ppid, .vsize = vsize};
+					printf("Process Name: %s\n", p.exName);
 				} 	
 			}
 			
