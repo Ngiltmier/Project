@@ -12,6 +12,8 @@ int main(int argc, char ** argv) {
 
 	struct dirent * de;	//Pointer for directory entry
 
+	//**********READ #1: FIND THE SIZE**********
+
 	//opendir() returns a pointer of DIR type
 	DIR * dr = opendir("/proc");
 
@@ -21,10 +23,37 @@ int main(int argc, char ** argv) {
 		return 0;
 	}
 
+	//keep track of the max PID to correctly size an array of Processes
+	int max = 0;
+
 	while ((de = readdir(dr)) != NULL) {
 		//check to see if the current directory is an integer
 		//all processes are integers
-		if (atoi(de->d_name) != 0) {		
+		if (atoi(de->d_name) != 0) {
+			max++;			
+		}
+	}
+
+
+	//**********READ #2: APPEND TO LIST OF PROCESSES**********
+
+	//opendir() returns a pointer of DIR type
+	dr = opendir("/proc");
+
+	//opendir() returns null if it couldn't open	
+	if (dr == NULL) {
+		printf("Could not open current directory");
+		return 0;
+	}
+
+	
+	while ((de = readdir(dr)) != NULL) {
+		//check to see if the current directory is an integer
+		//all processes are integers
+		if (atoi(de->d_name) != 0) {
+			
+			max++;			
+					
 			printf("Scanning <%s>...\n", de->d_name);
 
 			//creates a string fileName = "/proc/currentProcID/stat"
@@ -36,6 +65,7 @@ int main(int argc, char ** argv) {
 			//open the current file for reading			
 			FILE *fp;
 			fp = fopen(fileName, "r");
+			
 			
 			//check to see if something went wrong
 			//if it did, I really don't know what to do about that lol
@@ -53,12 +83,16 @@ int main(int argc, char ** argv) {
 				if (fscanf(fp, "%d %s %*s %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %lu", &pid, exName, &ppid, &vsize) == EOF) {
 					perror("sscanf");
 				} else {
+					if (pid > max) {max = pid;}
 					printf("pid: %d | exName: %s | ppid: %d | vsize: %lu\n", pid, exName, ppid, vsize);
 				} 	
 			}
+			
 			fclose(fp);
 		}
 	}
+
+	printf("\nMax PID: %d\n", max);
 
 	closedir(dr);
 	return 0;
