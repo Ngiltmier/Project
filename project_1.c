@@ -6,12 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <stdbool.h>
 
 struct Process {
 	int pid;
 	int ppid;
 	char *exName;
 	unsigned long vsize;
+	bool visited;
 };
 
 void printTabs(int level) {
@@ -20,15 +22,27 @@ void printTabs(int level) {
 	}
 }
 
-void findNeighbors(struct Process* listOfProcesses[], struct Process* node) {
-
+//struct Process** 
+void findNeighbors(struct Process listOfProcesses[], struct Process* node, int* max) {
+	struct Process* localChildren[*max];
+	for (int i = 0; i < *max; i++) {
+		printf("listOfProcesses[i].ppid = %s\n", listOfProcesses[i].exName); /*
+		if (node->pid == listOfProcesses[i].ppid) {
+			printf("localChild: pid: %d | exName: %s | ppid: %d | vsize: %lu\n", 
+				localChildren[i].pid, localChildren[i].exName, localChildren[i].ppid, localChildren[i].vsize);
+		}
+		*/
+	}
 }
 
-void printTree(int level, struct Process* node) {
+void printTree(int level, struct Process listOfProcesses[], struct Process* node, int* max) {
 	//DFS
 	//"visit" node
+	node->visited = true;
 	printTabs(level);
+	//printf("maxThere: %d", *max);
 	printf("(%d) %s, %lu kb\n", node->pid, node->exName, node->vsize);
+	//findNeighbors(listOfProcesses, node, max);
 }
 
 int main(int argc, char ** argv) {
@@ -108,7 +122,8 @@ int main(int argc, char ** argv) {
 					perror("sscanf");
 				} else {
 					//printf("pid: %d | exName: %s | ppid: %d | vsize: %lu\n", pid, exName, ppid, vsize);
-					struct Process p = {.pid = pid, .exName = exName, .ppid = ppid, .vsize = vsize};
+					struct Process p = {
+						.pid = pid, .exName = exName, .ppid = ppid, .vsize = vsize, .visited = false};
 					listOfProcesses[i] = p;
 					i++;
 				} 	
@@ -120,7 +135,7 @@ int main(int argc, char ** argv) {
 	closedir(dr);
 	
 	//printf("list[0]: memoryLoc = %p , pid = %d", &listOfProcesses[0], listOfProcesses[0].pid);
-	printTree(0, &listOfProcesses[0]);
+	printTree(0, listOfProcesses, &listOfProcesses[0], &max);
 
 	return 0;
 }
