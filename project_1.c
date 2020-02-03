@@ -24,14 +24,10 @@ void printTabs(int level) {
 
 
 struct Process* findNeighbors(struct Process listOfProcesses[], struct Process* node, int* max) {
-	//struct Process* localChildren[*max+1];
 	struct Process* localKids = malloc (sizeof(struct Process) * (*max + 1));
 	int j = 0;
 	for (int i = 0; i < *max; i++) {
-		//printf("listOfProcesses[i].ppid = %s\n", listOfProcesses[i].exName);
 		if (node->pid == listOfProcesses[i].ppid) {
-			/*printf("localChild: pid: %d | exName: %s | ppid: %d | vsize: %lu\n", 
-				localChildren[i].pid, localChildren[i].exName, localChildren[i].ppid, localChildren[i].vsize);*/
 			localKids[j] = listOfProcesses[i];
 			j++;
 		}
@@ -52,7 +48,6 @@ void printTree(int level, struct Process listOfProcesses[], struct Process* node
 	int i = 0;
 	struct Process* neighbors = findNeighbors(listOfProcesses, node, max);
 	while (neighbors[i].pid > 0) {
-		//printf("pid: %d, ppid: %d\n", neighbors[i].pid, neighbors[i].ppid);
 		if (neighbors[i].visited == false) {
 			printTree(level + 1, listOfProcesses, &neighbors[i], max);
 		i++;
@@ -107,7 +102,6 @@ int main(int argc, char ** argv) {
 		//all processes are integers
 		if (atoi(de->d_name) != 0) {		
 					
-			//printf("Scanning <%s>...\n", de->d_name);
 
 			//creates a string fileName = "/proc/currentProcID/stat"
 			char fileName[50];
@@ -129,11 +123,8 @@ int main(int argc, char ** argv) {
 				//declare variables to store the information we want from the proc/PID/stat file
 				int pid;
 				int ppid;
-				char exName[255];
+				char *exName = malloc(sizeof(char) * 255);				
 				unsigned long vsize;
-
-				//printf("exName: %s | address of exName %p\n", exName, &exName);
-				//printf("pid: %d | address of pid %p\n\n", pid, &pid);
 
 				//scan the proc/PID/stat file ignoring data we don't want
 				if (fscanf(fp, "%d %s %*s %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %lu", &pid, exName, &ppid, &vsize) == EOF) {
@@ -142,20 +133,9 @@ int main(int argc, char ** argv) {
 					//printf("pid: %d | exName: %s | ppid: %d | vsize: %lu\n", pid, exName, ppid, vsize);
 					struct Process p = {
 						.pid = pid, .exName = exName, .ppid = ppid, .vsize = vsize, .visited = false};
-					printf("FIRST pid: %d | exName: %s | ppid: %d | vsize: %lu\n", 
-						p.pid, p.exName, p.ppid, p.vsize);
 					listOfProcesses[i] = p;
-					//printf("SECND pid: %d | exName: %s | ppid: %d | vsize: %lu\n", 
-						//listOfProcesses[i].pid, listOfProcesses[i].exName, listOfProcesses[i].ppid, listOfProcesses[i].vsize);
-
-					/*
-					printf("THIRD pid = %d | exName: %s | ppid: %d | vsize: %lu\n", listOfProcesses[0].pid, listOfProcesses[0].exName, listOfProcesses[0].ppid, listOfProcesses[0].vsize);
-					printf("FORTH pid = %d | exName: %s | ppid: %d | vsize: %lu\n", listOfProcesses[1].pid, listOfProcesses[1].exName, listOfProcesses[1].ppid, listOfProcesses[1].vsize);
-					printf("FIFTH pid = %d | exName: %s | ppid: %d | vsize: %lu\n\n", listOfProcesses[2].pid, listOfProcesses[2].exName, listOfProcesses[2].ppid, listOfProcesses[2].vsize);
-					*/
-
 					i++;
-				} 	
+				}
 			}
 			
 			fclose(fp);
@@ -163,11 +143,8 @@ int main(int argc, char ** argv) {
 	}
 	closedir(dr);
 	
-	printf("THIRD pid = %d | exName: %s | ppid: %d | vsize: %lu\n\n", listOfProcesses[0].pid, listOfProcesses[0].exName, listOfProcesses[0].ppid, listOfProcesses[0].vsize);
 
 	printTree(0, listOfProcesses, &listOfProcesses[0], &max);
 
 	return 0;
 }
-/////////////////////////////////////////////////////////////////ONLY THE STRING IS BEING UPDATED///////////////////////////////////////////
-
