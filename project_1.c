@@ -148,6 +148,8 @@ int main(int argc, char ** argv) {
 					listOfProcesses[i] = p;
 					i++;
 				}
+				
+				free(exName);
 			}
 			
 			fclose(fp);
