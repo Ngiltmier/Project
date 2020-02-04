@@ -16,39 +16,51 @@ struct Process {
 	bool visited;
 };
 
+// Prints the correct number of tabs for each level of the tree
 void printTabs(int level) {
 	for (int i = 0; i < level; i++) {
 		printf("\t");
 	}
 }
 
-
+// Finds the children of a node (don't know why garrett named it this way)
 struct Process* findNeighbors(struct Process listOfProcesses[], struct Process* node, int* max) {
 	struct Process* localKids = malloc (sizeof(struct Process) * (*max + 1));
 	int j = 0;
 	for (int i = 0; i < *max; i++) {
+		//searches for mathcing parent child ID in the process list
 		if (node->pid == listOfProcesses[i].ppid) {
+			//fills array with children 
 			localKids[j] = listOfProcesses[i];
 			j++;
 		}
 		
 	}
+	//signals the end of the array
 	struct Process end = {.pid = -1};
 	localKids[j+1] = end;
 	return localKids;
 }
 
+// Prints the tree of processes (recurssive)
 void printTree(int level, struct Process listOfProcesses[], struct Process* node, int* max) {
 	//DFS
 	//"visit" node
 	node->visited = true;
+	
+	//creates proper spacing depending on the level
 	printTabs(level);
+	//prints the information needed (pid, ppid, process name, and vsize)
 	printf("(%d///%d) %s, %lu kb\n", node->pid, node->ppid, node->exName, node->vsize);
 
 	int i = 0;
+	//returns an array of children (which are all neighbors)
 	struct Process* neighbors = findNeighbors(listOfProcesses, node, max);
+
 	while (neighbors[i].pid > 0) {
+		//checks to make sure the node is not visited
 		if (neighbors[i].visited == false) {
+			//recursive call
 			printTree(level + 1, listOfProcesses, &neighbors[i], max);
 		i++;
 		}
@@ -143,7 +155,7 @@ int main(int argc, char ** argv) {
 	}
 	closedir(dr);
 	
-
+	//begining of the recursion that creates the tree
 	printTree(0, listOfProcesses, &listOfProcesses[0], &max);
 
 	return 0;
