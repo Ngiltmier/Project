@@ -23,8 +23,8 @@ void printTabs(int level) {
 	}
 }
 
-// Finds the children of a node (don't know why garrett named it this way)
-struct Process* findNeighbors(struct Process listOfProcesses[], struct Process* node, int* max) {
+// Finds the children of a node
+struct Process* findChildren(struct Process listOfProcesses[], struct Process* node, int* max) {
 	struct Process* localKids = malloc (sizeof(struct Process) * (*max + 1));
 	int j = 0;
 	for (int i = 0; i < *max; i++) {
@@ -42,7 +42,7 @@ struct Process* findNeighbors(struct Process listOfProcesses[], struct Process* 
 	return localKids;
 }
 
-// Prints the tree of processes (recurssive)
+// Prints the tree of processes (recursive)
 void printTree(int level, struct Process listOfProcesses[], struct Process* node, int* max) {
 	//DFS
 	//"visit" node
@@ -55,7 +55,7 @@ void printTree(int level, struct Process listOfProcesses[], struct Process* node
 
 	int i = 0;
 	//returns an array of children (which are all neighbors)
-	struct Process* neighbors = findNeighbors(listOfProcesses, node, max);
+	struct Process* neighbors = findChildren(listOfProcesses, node, max);
 
 	while (neighbors[i].pid > 0) {
 		//checks to make sure the node is not visited
